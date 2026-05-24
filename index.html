@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pigmento — Teste</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#080a0d;color:#e8eaf0;font-family:sans-serif;padding:20px;min-height:100vh}
+.wrap{max-width:700px;margin:0 auto}
+h1{text-align:center;font-size:24px;letter-spacing:4px;margin-bottom:20px}
+h1 span{color:#c8a84b}
+.card{background:#0e1117;border:1px solid #252c3f;border-radius:12px;padding:18px;margin-bottom:14px}
+label{font-size:10px;color:#6b7390;letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:10px}
+img#car{width:100%;max-height:200px;object-fit:contain;border-radius:8px;background:#141820;display:block}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px}
+.sw{aspect-ratio:1;border-radius:9px;cursor:pointer;border:3px solid transparent;transition:all .2s;position:relative}
+.sw.on{border-color:#c8a84b;box-shadow:0 0 0 3px rgba(200,168,75,.2)}
+.sw span{position:absolute;bottom:-18px;left:0;right:0;text-align:center;font-size:9px;color:#6b7390}
+.sel{display:none;align-items:center;gap:10px;background:#141820;border:1px solid #252c3f;border-radius:8px;padding:10px;margin-top:8px}
+.dot{width:30px;height:30px;border-radius:6px;flex-shrink:0}
+.sn{font-size:13px;font-weight:600}
+.sh{font-family:monospace;font-size:11px;color:#6b7390}
+button{width:100%;padding:16px;background:#c8a84b;border:none;border-radius:9px;color:#000;font-weight:700;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
+.st{border-radius:8px;padding:10px 13px;margin-top:10px;font-size:12px;display:none}
+.st.on{display:block}
+.run{background:rgba(200,168,75,.08);border:1px solid rgba(200,168,75,.3);color:#c8a84b}
+.ok{background:rgba(0,200,83,.08);border:1px solid rgba(0,200,83,.3);color:#00c853}
+.err{background:rgba(229,57,53,.08);border:1px solid rgba(229,57,53,.3);color:#e53935}
+.lg{background:#141820;border:1px solid #252c3f;border-radius:8px;padding:8px;margin-top:8px;font-family:monospace;font-size:10px;color:#6b7390;max-height:90px;overflow-y:auto;display:none;line-height:1.8}
+.lg.on{display:block}
+.cmp{display:none;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.cmp.on{display:grid}
+.ci{background:#141820;border:1px solid #252c3f;border-radius:10px;overflow:hidden}
+.ci p{padding:6px 10px;font-size:9px;color:#6b7390;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #252c3f}
+.ci img{width:100%;max-height:160px;object-fit:contain;display:block;background:#141820}
+a.dl{display:block;width:100%;padding:10px;background:#00c853;border-radius:8px;color:#000;font-weight:700;font-size:12px;text-transform:uppercase;text-decoration:none;text-align:center;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>PIGMENTO<span>.</span></h1>
+<div class="card">
+  <label>Foto Base — Toyota Corolla 2020</label>
+  <img id="car" src="https://i.ibb.co/QZsWRW0/file-00000000acf8720ea74682a6787232f5.png" alt="Carro"/>
+</div>
+<div class="card">
+  <label>Cor da Lataria OEM</label>
+  <div style="margin-bottom:22px"><div class="grid" id="grid"></div></div>
+  <div class="sel" id="sel">
+    <div class="dot" id="dot"></div>
+    <div><div class="sn" id="sn"></div><div class="sh" id="sh"></div></div>
+  </div>
+</div>
+<div class="card">
+  <button id="btn" onclick="gen()" disabled>Gerar Imagem Recolorida</button>
+  <div class="st" id="st"></div>
+  <div class="lg" id="lg"></div>
+  <div class="cmp" id="cmp">
+    <div class="ci"><p>Original</p><img id="orig" src=""/></div>
+    <div class="ci"><p>Recolorida</p><img id="res" src=""/></div>
+  </div>
+  <a class="dl" id="dl" href="#" target="_blank" style="display:none">Abrir Imagem</a>
+</div>
+</div>
+<script>
+const C=[
+  {n:"Preto Atitude",c:"220",h:"#1C1C1C"},
+  {n:"Branco Super",c:"070",h:"#F2F2F0"},
+  {n:"Prata Magnetic",c:"1F7",h:"#9A9EA6"},
+  {n:"Vermelho Barcelona",c:"3P3",h:"#B81C2E"},
+  {n:"Azul Galactic",c:"8X3",h:"#1B3A6B"},
+  {n:"Cinza Celestial",c:"1G3",h:"#6B7280"},
+  {n:"Bronze Copper",c:"4X2",h:"#7C4A1E"},
+  {n:"Branco Perola",c:"089",h:"#E8E8E6"},
+];
+const IMG="https://i.ibb.co/QZsWRW0/file-00000000acf8720ea74682a6787232f5.png";
+const API="/api/recolor";
+let sel=null;
+const g=document.getElementById("grid");
+C.forEach(c=>{
+  const d=document.createElement("div");
+  d.className="sw";d.style.background=c.h;
+  d.innerHTML=`<span>${c.n.split(" ")[0]}</span>`;
+  d.onclick=()=>{
+    document.querySelectorAll(".sw").forEach(s=>s.classList.remove("on"));
+    d.classList.add("on");sel=c;
+    document.getElementById("dot").style.background=c.h;
+    document.getElementById("sn").textContent=`${c.n} · ${c.c}`;
+    document.getElementById("sh").textContent=c.h;
+    document.getElementById("sel").style.display="flex";
+    document.getElementById("btn").disabled=false;
+  };
+  g.appendChild(d);
+});
+function T(){return new Date().toLocaleTimeString("pt-BR")}
+function log(m){const e=document.getElementById("lg");e.classList.add("on");e.innerHTML+=m+"<br>";e.scrollTop=e.scrollHeight}
+function st(t,m){const e=document.getElementById("st");e.className=`st on ${t}`;e.textContent=m}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+async function gen(){
+  if(!sel)return;
+  const btn=document.getElementById("btn");
+  btn.disabled=true;
+  document.getElementById("cmp").classList.remove("on");
+  document.getElementById("dl").style.display="none";
+  document.getElementById("lg").innerHTML="";
+  st("run","Enviando...");
+  log(`[${T()}] Cor: ${sel.n} ${sel.h}`);
+  try{
+    const r=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({imageUrl:IMG,colorHex:sel.h,colorName:sel.n})});
+    if(!r.ok)throw new Error(`HTTP ${r.status}`);
+    const d=await r.json();
+    log(`[${T()}] ID: ${d.id?.slice(0,16)} | ${d.status}`);
+    if(d.error)throw new Error(d.error);
+    if(d.output){done(Array.isArray(d.output)?d.output[0]:d.output);return}
+    if(d.id){
+      st("run","Processando...");
+      for(let i=0;i<30;i++){
+        await sleep(4000);
+        const pr=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({checkId:d.id})});
+        const pd=await pr.json();
+        log(`[${T()}] ${pd.status} (${(i+1)*4}s)`);
+        st("run",`${pd.status}... ${(i+1)*4}s`);
+        if(pd.status==="succeeded"){done(Array.isArray(pd.output)?pd.output[0]:pd.output);return}
+        if(pd.status==="failed")throw new Error(pd.error||"Falhou");
+      }
+      throw new Error("Timeout");
+    }
+  }catch(e){log(`[${T()}] Erro: ${e.message}`);st("err",`Erro: ${e.message}`);}
+  finally{btn.disabled=false}
+}
+function done(url){
+  log(`[${T()}] Pronto!`);st("ok","Imagem gerada!");
+  document.getElementById("orig").src=IMG;
+  document.getElementById("res").src=url;
+  document.getElementById("cmp").classList.add("on");
+  const dl=document.getElementById("dl");dl.href=url;dl.style.display="block";
+}
+</script>
+</body>
+</html>
