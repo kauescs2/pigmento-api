@@ -3,24 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pigmento — Teste</title>
+<title>Pigmento — Teste Recoloração v2</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#080a0d;color:#e8eaf0;font-family:sans-serif;padding:20px;min-height:100vh}
-.wrap{max-width:700px;margin:0 auto}
-h1{text-align:center;font-size:24px;letter-spacing:4px;margin-bottom:20px}
+.wrap{max-width:760px;margin:0 auto}
+h1{text-align:center;font-size:24px;letter-spacing:4px;margin-bottom:4px}
 h1 span{color:#c8a84b}
+.sub{font-size:10px;color:#6b7390;text-align:center;letter-spacing:2px;text-transform:uppercase;margin-bottom:24px}
 .card{background:#0e1117;border:1px solid #252c3f;border-radius:12px;padding:18px;margin-bottom:14px}
 label{font-size:10px;color:#6b7390;letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:10px}
-img#car{width:100%;max-height:200px;object-fit:contain;border-radius:8px;background:#141820;display:block}
+img.preview{width:100%;max-height:220px;object-fit:contain;border-radius:8px;background:#141820;display:block}
 .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px}
 .sw{aspect-ratio:1;border-radius:9px;cursor:pointer;border:3px solid transparent;transition:all .2s;position:relative}
+.sw:hover{transform:scale(1.06)}
 .sw.on{border-color:#c8a84b;box-shadow:0 0 0 3px rgba(200,168,75,.2)}
-.sw span{position:absolute;bottom:-18px;left:0;right:0;text-align:center;font-size:9px;color:#6b7390}
-.sel{display:none;align-items:center;gap:10px;background:#141820;border:1px solid #252c3f;border-radius:8px;padding:10px;margin-top:8px}
-.dot{width:30px;height:30px;border-radius:6px;flex-shrink:0}
-.sn{font-size:13px;font-weight:600}
-.sh{font-family:monospace;font-size:11px;color:#6b7390}
+.sw span{position:absolute;bottom:-18px;left:0;right:0;text-align:center;font-size:9px;color:#6b7390;white-space:nowrap}
+.selbox{display:flex;align-items:center;gap:12px;background:#141820;border:1px solid #252c3f;border-radius:8px;padding:10px;margin-top:8px}
+.dot{width:32px;height:32px;border-radius:6px;flex-shrink:0;border:2px solid rgba(255,255,255,.1)}
+.sname{font-size:13px;font-weight:600}
+.shex{font-family:monospace;font-size:11px;color:#6b7390}
 button{width:100%;padding:16px;background:#c8a84b;border:none;border-radius:9px;color:#000;font-weight:700;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer}
 button:disabled{opacity:.5;cursor:not-allowed}
 .st{border-radius:8px;padding:10px 13px;margin-top:10px;font-size:12px;display:none}
@@ -28,76 +30,118 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .run{background:rgba(200,168,75,.08);border:1px solid rgba(200,168,75,.3);color:#c8a84b}
 .ok{background:rgba(0,200,83,.08);border:1px solid rgba(0,200,83,.3);color:#00c853}
 .err{background:rgba(229,57,53,.08);border:1px solid rgba(229,57,53,.3);color:#e53935}
-.lg{background:#141820;border:1px solid #252c3f;border-radius:8px;padding:8px;margin-top:8px;font-family:monospace;font-size:10px;color:#6b7390;max-height:90px;overflow-y:auto;display:none;line-height:1.8}
+.lg{background:#141820;border:1px solid #252c3f;border-radius:8px;padding:10px;margin-top:8px;font-family:monospace;font-size:10px;color:#6b7390;max-height:120px;overflow-y:auto;display:none;line-height:1.8}
 .lg.on{display:block}
 .cmp{display:none;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
 .cmp.on{display:grid}
 .ci{background:#141820;border:1px solid #252c3f;border-radius:10px;overflow:hidden}
-.ci p{padding:6px 10px;font-size:9px;color:#6b7390;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #252c3f}
-.ci img{width:100%;max-height:160px;object-fit:contain;display:block;background:#141820}
-a.dl{display:block;width:100%;padding:10px;background:#00c853;border-radius:8px;color:#000;font-weight:700;font-size:12px;text-transform:uppercase;text-decoration:none;text-align:center;margin-top:10px}
+.cl{padding:7px 12px;font-size:10px;color:#6b7390;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #252c3f}
+.ci img{width:100%;max-height:180px;object-fit:contain;display:block;background:#141820}
+a.dl{display:block;width:100%;padding:11px;background:#00c853;border-radius:8px;color:#000;font-weight:700;font-size:12px;text-transform:uppercase;text-decoration:none;text-align:center;margin-top:10px}
+.prompt-box{background:#141820;border:1px solid #252c3f;border-radius:8px;padding:12px;margin-top:10px;font-family:monospace;font-size:11px;color:#c8a84b;line-height:1.6;white-space:pre-wrap}
 </style>
 </head>
 <body>
 <div class="wrap">
-<h1>PIGMENTO<span>.</span></h1>
-<div class="card">
-  <label>Foto Base — Toyota Corolla 2020</label>
-  <img id="car" src="https://i.ibb.co/QZsWRW0/file-00000000acf8720ea74682a6787232f5.png" alt="Carro"/>
-</div>
-<div class="card">
-  <label>Cor da Lataria OEM</label>
-  <div style="margin-bottom:22px"><div class="grid" id="grid"></div></div>
-  <div class="sel" id="sel">
-    <div class="dot" id="dot"></div>
-    <div><div class="sn" id="sn"></div><div class="sh" id="sh"></div></div>
+  <h1>PIGMENTO<span>.</span></h1>
+  <div class="sub">Teste de Recoloração v2 — Prompt Aprimorado</div>
+
+  <div class="card">
+    <label>Foto Base do Veículo</label>
+    <img class="preview" id="carImg" src="https://i.ibb.co/QZsWRW0/file-00000000acf8720ea74682a6787232f5.png" alt="Carro"/>
+  </div>
+
+  <div class="card">
+    <label>Cor da Lataria</label>
+    <div style="margin-bottom:24px"><div class="grid" id="grid"></div></div>
+    <div class="selbox" id="selbox" style="display:none">
+      <div class="dot" id="dot"></div>
+      <div>
+        <div class="sname" id="sname"></div>
+        <div class="shex" id="shex"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <label>Prompt que será enviado para a IA</label>
+    <div class="prompt-box" id="promptPreview">Selecione uma cor para ver o prompt...</div>
+  </div>
+
+  <div class="card">
+    <button id="btn" onclick="gen()" disabled>Gerar Imagem Recolorida</button>
+    <div class="st" id="st"></div>
+    <div class="lg" id="lg"></div>
+    <div class="cmp" id="cmp">
+      <div class="ci"><div class="cl">Original</div><img id="orig" src=""/></div>
+      <div class="ci"><div class="cl">Recolorida</div><img id="res" src=""/></div>
+    </div>
+    <a class="dl" id="dl" href="#" target="_blank" style="display:none">Abrir Imagem</a>
   </div>
 </div>
-<div class="card">
-  <button id="btn" onclick="gen()" disabled>Gerar Imagem Recolorida</button>
-  <div class="st" id="st"></div>
-  <div class="lg" id="lg"></div>
-  <div class="cmp" id="cmp">
-    <div class="ci"><p>Original</p><img id="orig" src=""/></div>
-    <div class="ci"><p>Recolorida</p><img id="res" src=""/></div>
-  </div>
-  <a class="dl" id="dl" href="#" target="_blank" style="display:none">Abrir Imagem</a>
-</div>
-</div>
+
 <script>
 const C=[
-  {n:"Preto Atitude",c:"220",h:"#1C1C1C"},
-  {n:"Branco Super",c:"070",h:"#F2F2F0"},
-  {n:"Prata Magnetic",c:"1F7",h:"#9A9EA6"},
-  {n:"Vermelho Barcelona",c:"3P3",h:"#B81C2E"},
-  {n:"Azul Galactic",c:"8X3",h:"#1B3A6B"},
-  {n:"Cinza Celestial",c:"1G3",h:"#6B7280"},
-  {n:"Bronze Copper",c:"4X2",h:"#7C4A1E"},
-  {n:"Branco Perola",c:"089",h:"#E8E8E6"},
+  {name:"Preto Atitude",     code:"220",hex:"#1C1C1C",rgb:"28,28,28",    tipo:"solid",    desc:"flat matte black"},
+  {name:"Branco Super",      code:"070",hex:"#F2F2F0",rgb:"242,242,240",  tipo:"perolado", desc:"pearl white"},
+  {name:"Prata Magnetic",    code:"1F7",hex:"#9A9EA6",rgb:"154,158,166",  tipo:"metalico", desc:"metallic silver gray"},
+  {name:"Vermelho Barcelona",code:"3P3",hex:"#B81C2E",rgb:"184,28,46",    tipo:"metalico", desc:"deep metallic red"},
+  {name:"Azul Galactic",     code:"8X3",hex:"#1B3A6B",rgb:"27,58,107",    tipo:"metalico", desc:"dark metallic navy blue"},
+  {name:"Cinza Celestial",   code:"1G3",hex:"#6B7280",rgb:"107,114,128",  tipo:"metalico", desc:"metallic slate gray"},
+  {name:"Bronze Copper",     code:"4X2",hex:"#7C4A1E",rgb:"124,74,30",    tipo:"metalico", desc:"metallic copper bronze"},
+  {name:"Branco Perola",     code:"089",hex:"#E8E8E6",rgb:"232,232,230",  tipo:"perolado", desc:"pearl off-white"},
 ];
+
 const IMG="https://i.ibb.co/QZsWRW0/file-00000000acf8720ea74682a6787232f5.png";
 const API="/api/recolor";
 let sel=null;
-const g=document.getElementById("grid");
-C.forEach(c=>{
-  const d=document.createElement("div");
-  d.className="sw";d.style.background=c.h;
-  d.innerHTML=`<span>${c.n.split(" ")[0]}</span>`;
-  d.onclick=()=>{
-    document.querySelectorAll(".sw").forEach(s=>s.classList.remove("on"));
-    d.classList.add("on");sel=c;
-    document.getElementById("dot").style.background=c.h;
-    document.getElementById("sn").textContent=`${c.n} · ${c.c}`;
-    document.getElementById("sh").textContent=c.h;
-    document.getElementById("sel").style.display="flex";
-    document.getElementById("btn").disabled=false;
-  };
-  g.appendChild(d);
-});
+
+function buildPrompt(c){
+  const f={solid:"solid matte paint finish",metalico:"metallic paint finish with subtle sparkle and depth",perolado:"pearlescent paint finish with color-shifting iridescent quality"};
+  return `You are a professional automotive photo editor. Change ONLY the car body paint color in this image.
+
+STRICT RULES:
+1. Change ONLY exterior body panels (doors, hood, roof, trunk, fenders, bumpers)
+2. Do NOT change: wheels, tires, windows, interior, headlights, taillights, chrome, rubber seals
+3. Do NOT change: background, road, ground shadows
+4. PRESERVE all lighting and shadows on the car body
+5. Result must look like a professional factory photo
+
+TARGET COLOR:
+- Name: ${c.name} (Toyota OEM code ${c.code})
+- Exact hex: ${c.hex}
+- RGB: rgb(${c.rgb})
+- Paint type: ${f[c.tipo]}
+- Description: ${c.desc}
+
+Match hex ${c.hex} exactly on the car body under neutral lighting.`;
+}
+
+(()=>{
+  const g=document.getElementById("grid");
+  C.forEach(c=>{
+    const d=document.createElement("div");
+    d.className="sw";d.style.background=c.hex;
+    d.innerHTML=`<span>${c.name.split(" ")[0]}</span>`;
+    d.onclick=()=>{
+      document.querySelectorAll(".sw").forEach(s=>s.classList.remove("on"));
+      d.classList.add("on");sel=c;
+      document.getElementById("dot").style.background=c.hex;
+      document.getElementById("sname").textContent=`${c.name} · ${c.code}`;
+      document.getElementById("shex").textContent=`${c.hex} · ${c.tipo}`;
+      document.getElementById("selbox").style.display="flex";
+      document.getElementById("btn").disabled=false;
+      document.getElementById("promptPreview").textContent=buildPrompt(c);
+    };
+    g.appendChild(d);
+  });
+})();
+
 function T(){return new Date().toLocaleTimeString("pt-BR")}
 function log(m){const e=document.getElementById("lg");e.classList.add("on");e.innerHTML+=m+"<br>";e.scrollTop=e.scrollHeight}
 function st(t,m){const e=document.getElementById("st");e.className=`st on ${t}`;e.textContent=m}
 function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+
 async function gen(){
   if(!sel)return;
   const btn=document.getElementById("btn");
@@ -106,10 +150,10 @@ async function gen(){
   document.getElementById("dl").style.display="none";
   document.getElementById("lg").innerHTML="";
   st("run","Enviando...");
-  log(`[${T()}] Cor: ${sel.n} ${sel.h}`);
+  log(`[${T()}] Cor: ${sel.name} | Hex: ${sel.hex}`);
   try{
     const r=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({imageUrl:IMG,colorHex:sel.h,colorName:sel.n})});
+      body:JSON.stringify({imageUrl:IMG,colorHex:sel.hex,colorName:sel.name,prompt:buildPrompt(sel)})});
     if(!r.ok)throw new Error(`HTTP ${r.status}`);
     const d=await r.json();
     log(`[${T()}] ID: ${d.id?.slice(0,16)} | ${d.status}`);
@@ -123,7 +167,6 @@ async function gen(){
           body:JSON.stringify({checkId:d.id})});
         const pd=await pr.json();
         log(`[${T()}] ${pd.status} (${(i+1)*4}s)`);
-        st("run",`${pd.status}... ${(i+1)*4}s`);
         if(pd.status==="succeeded"){done(Array.isArray(pd.output)?pd.output[0]:pd.output);return}
         if(pd.status==="failed")throw new Error(pd.error||"Falhou");
       }
@@ -132,6 +175,7 @@ async function gen(){
   }catch(e){log(`[${T()}] Erro: ${e.message}`);st("err",`Erro: ${e.message}`);}
   finally{btn.disabled=false}
 }
+
 function done(url){
   log(`[${T()}] Pronto!`);st("ok","Imagem gerada!");
   document.getElementById("orig").src=IMG;
