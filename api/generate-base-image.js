@@ -19,30 +19,24 @@ export default async function handler(req, res) {
     });
   }
 
-  const {
-    marca,
-    modelo,
-    geracao,
-    ano_referencia
-  } = req.body;
+  try {
+    const {
+      marca,
+      modelo,
+      geracao,
+      ano_referencia
+    } = req.body;
 
-  if (!marca || !modelo || !ano_referencia) {
-    return res.status(400).json({
-      error: 'marca, modelo e ano_referencia são obrigatórios'
-    });
-  }
-
-  const prompt = `
-Create a professional OEM automotive studio photograph.
+    const prompt = `
+Create a professional automotive studio photograph.
 
 VEHICLE:
 ${marca} ${modelo}
-Generation: ${geracao || 'Factory Generation'}
-Reference Year: ${ano_referencia}
+Generation: ${geracao}
+Model year: ${ano_referencia}
 
 STRICT REQUIREMENTS:
-
-- Exact factory appearance
+- Exact factory OEM appearance
 - 100% stock vehicle
 - Correct body style for this generation
 - Correct headlights
@@ -50,46 +44,35 @@ STRICT REQUIREMENTS:
 - Correct mirrors
 - Correct wheels
 - Correct proportions
-- OEM manufacturer appearance
-
-CAMERA:
-- Front 3/4 angle
-- Vehicle facing slightly left
-- Entire vehicle visible
-- Automotive catalog style
+- No modifications
+- No tuning
+- No aftermarket parts
+- No stickers
 
 BACKGROUND:
 - Pure white seamless studio background
+- Automotive catalog photography
 - No scenery
 - No road
 - No buildings
 - No people
 
+CAMERA:
+- Front 3/4 angle
+- Entire vehicle visible
+- Centered composition
+
 LIGHTING:
 - Professional studio lighting
-- Soft reflections
-- Neutral lighting
-- Commercial photography style
-
-IMPORTANT:
-- No text
-- No watermark
-- No logo
-- No color labels
-- No paint codes
-- No license plate text
-- No banners
-- No annotations
+- Clean reflections
+- Manufacturer catalog style
 
 QUALITY:
 - Ultra realistic
-- OEM catalog photography
-- Manufacturer marketing photo
+- OEM marketing photography
 - High resolution
-- Clean paint finish
 `;
 
-  try {
     const response = await fetch(
       'https://api.replicate.com/v1/models/openai/gpt-image-1.5/predictions',
       {
@@ -102,16 +85,15 @@ QUALITY:
           input: {
             prompt,
             aspect_ratio: '3:2',
-            output_format: 'jpg',
-            quality: 'medium'
+            output_format: 'jpeg'
           }
         })
       }
     );
 
-    const prediction = await response.json();
+    const data = await response.json();
 
-    return res.status(200).json(prediction);
+    return res.status(200).json(data);
 
   } catch (error) {
     return res.status(500).json({
